@@ -5,7 +5,7 @@
     </label>
     <div
       :class="{ 'mt-6': !label }"
-      class="flex items-center bg-white shadow-sm rounded border border-gray-300 transition-colors duration-200 input"
+      class="flex items-center bg-white shadow-sm rounded border border-gray-300 focus-within:border-gray-400 transition-colors duration-200 input"
     >
       <div v-if="$slots.icon" class="px-2 border-r" @click="$refs[id].focus()">
         <slot name="icon" />

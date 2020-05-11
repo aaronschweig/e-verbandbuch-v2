@@ -4,7 +4,7 @@
       <nav
         class="flex rounded-lg bg-gray-100 shadow-xl h-16 items-center overflow-hidden border"
       >
-        <button class="bg-teal-400 h-full px-6 z-10 focus:outline-none">
+        <button class="bg-primary h-full px-6 z-10 focus:outline-none">
           <svg
             class="text-white h-6"
             stroke-linecap="round"
@@ -19,7 +19,7 @@
         <router-link
           tag="h1"
           to="/"
-          class="cursor-pointer px-2 pl-6 h-full flex items-center font-semibold text-xl sm:text-2xl hover:bg-teal-400 active:bg-teal-400 hover:text-white transition-colors duration-200"
+          class="cursor-pointer px-2 pl-6 h-full flex items-center font-semibold text-xl sm:text-2xl hover:bg-primary active:bg-primary hover:text-white transition-colors duration-200"
           >eVerbandbuch</router-link
         >
       </nav>
