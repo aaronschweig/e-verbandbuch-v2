@@ -167,7 +167,8 @@ export default Vue.extend({
       any
     >,
     current: stepperMachine.initialState,
-    context: stepperMachine.context!
+    context: stepperMachine.context!,
+    observer: (null as unknown) as IntersectionObserver
   }),
   created() {
     this.stepperService = createStepperMachine(this.submit);
@@ -183,6 +184,22 @@ export default Vue.extend({
         }
       })
       .start();
+  },
+  mounted() {
+    this.observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const step = parseInt(e.target.id.split("_")[1], 10);
+          if (this.context.step !== step) {
+            this.send("JUMP", step);
+          }
+        }
+      });
+    });
+    const headings = document.getElementsByClassName("text-xl font-bold");
+    for (const heading of headings) {
+      this.observer.observe(heading);
+    }
   },
   methods: {
     send(event: "NEXT" | "PREV" | "JUMP", to?: number) {

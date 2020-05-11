@@ -1,14 +1,31 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Home.vue";
+// import Home from '../views/Home.vue';
+import Create from "../views/Create.vue";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
+  // {
+  //   path: '/',
+  //   name: 'home',
+  //   component: Home,
+  // },
   {
     path: "/",
-    name: "Home",
-    component: Home
+    name: "home",
+    redirect: "create"
+  },
+  {
+    path: "/create",
+    name: "create",
+    component: Create
+  },
+  {
+    path: "/create/:token",
+    name: "open-create",
+    component: Create,
+    props: true
   }
   // {
   //   path: "/about",
