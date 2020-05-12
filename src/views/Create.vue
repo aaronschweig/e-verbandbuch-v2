@@ -6,7 +6,11 @@
       </h2>
       <h3 class="text-lg font-medium mt-8">Wer wurde wo verletzt?</h3>
       <div class="space-y-6">
-        <ev-input label="Name des Verletzten" placeholder="Thomas Müller">
+        <ev-input
+          label="Name des Verletzten"
+          placeholder="Thomas Müller"
+          v-model="verbandbuch.verletzter"
+        >
           <template #icon>
             <svg
               class="h-6 text-gray-600"
@@ -23,7 +27,11 @@
             </svg>
           </template>
         </ev-input>
-        <ev-input label="Unfallort" placeholder="Mannheim">
+        <ev-input
+          label="Unfallort"
+          placeholder="Mannheim"
+          v-model="verbandbuch.unfallort"
+        >
           <template #icon>
             <svg
               class="h-6 text-gray-600"
@@ -40,7 +48,11 @@
             </svg>
           </template>
         </ev-input>
-        <ev-input label="Arbeitsbereich" placeholder="Garage A">
+        <ev-input
+          label="Arbeitsbereich"
+          placeholder="Garage A"
+          v-model="verbandbuch.arbeitsbereich"
+        >
           <template #icon>
             <svg
               class="h-6 text-gray-600"
@@ -61,7 +73,11 @@
 
       <h3 class="text-lg font-medium mt-8">Wer wurde wo verletzt?</h3>
 
-      <ev-input label="Name der Zeugen" placeholder="Monika Musterfrau">
+      <ev-input
+        label="Name der Zeugen"
+        placeholder="Monika Musterfrau"
+        v-model="verbandbuch.zeugen"
+      >
         <template #icon>
           <svg
             class="h-6 text-gray-600"
@@ -84,13 +100,17 @@
         Angaben zum Unfallhergang (2/2)
       </h2>
       <h3 class="text-lg font-medium mt-8">Wie ist der Unfall abgelaufen?</h3>
-      <ev-textarea placeholder="Hammerschlag auf die Hand ..."></ev-textarea>
+      <ev-textarea
+        placeholder="Hammerschlag auf die Hand ..."
+        v-model="verbandbuch.hergang"
+      />
       <h3 class="text-lg font-medium mt-8">
         Was ist der Umfang der Verletzung?
       </h3>
       <ev-textarea
         placeholder="Gebrochener Zeigefinger und blutende Hand ..."
-      ></ev-textarea>
+        v-model="verbandbuch.umfang"
+      />
     </div>
     <div class="min-h-screen sm:w-2/3">
       <h2 id="h2_3" class="text-xl font-bold">
@@ -98,7 +118,11 @@
       </h2>
       <h3 class="text-lg font-medium mt-8">Wer hat wann geholfen?</h3>
       <div class="space-y-6">
-        <ev-input label="Name des Ersthelfers" placeholder="Thomas Müller">
+        <ev-input
+          label="Name des Ersthelfers"
+          placeholder="Thomas Müller"
+          v-model="verbandbuch.ersthelfer"
+        >
           <template #icon>
             <svg
               class="h-6 text-gray-600"
@@ -115,7 +139,11 @@
             </svg>
           </template>
         </ev-input>
-        <ev-input label="Datum und Uhrzeit der Hilfe" placeholder="13:15 Uhr">
+        <ev-input
+          label="Datum und Uhrzeit der Hilfe"
+          placeholder="13:15 Uhr"
+          v-model="verbandbuch.erstehilfezeitpunkt"
+        >
           <template #icon>
             <svg
               class="h-6 text-gray-600"
@@ -138,7 +166,8 @@
       </h3>
       <ev-textarea
         placeholder="Verband angelegt und Hand stabilisiert ..."
-      ></ev-textarea>
+        v-model="verbandbuch.massnahmen"
+      />
     </div>
 
     <div class="fixed w-full z-10" style="bottom: 1.5rem;">
@@ -156,6 +185,7 @@
 import Vue from "vue";
 import { createStepperMachine, stepperMachine } from "@/machine/stepper";
 import { Interpreter } from "xstate";
+import { useMutation } from "../use/useQuery";
 
 export default Vue.extend({
   data: () => ({
@@ -168,7 +198,19 @@ export default Vue.extend({
     >,
     current: stepperMachine.initialState,
     context: stepperMachine.context!,
-    observer: (null as unknown) as IntersectionObserver
+    observer: (null as unknown) as IntersectionObserver,
+    verbandbuch: {
+      verletzter: "",
+      unfallzeitpunkt: new Date().toISOString(),
+      arbeitsbereich: "",
+      unfallort: "",
+      hergang: "",
+      umfang: "",
+      zeugen: "",
+      erstehilfezeitpunkt: new Date().toISOString(),
+      massnahmen: "",
+      ersthelfer: ""
+    }
   }),
   created() {
     this.stepperService = createStepperMachine(this.submit);
@@ -205,7 +247,29 @@ export default Vue.extend({
     send(event: "NEXT" | "PREV" | "JUMP", to?: number) {
       this.stepperService.send(event, { step: to });
     },
-    submit() {
+    async submit() {
+      const res = await useMutation(
+        `mutation createEintrag { updateVerbandbuch(verbandbuch: {${Object.keys(
+          {
+            ...this.verbandbuch
+            //erstehilfezeitpunkt: this.ehDate,
+          }
+        )
+          .map(key => {
+            return (
+              key +
+              ': "' +
+              ((this.verbandbuch as any)[key] as string).replace(/"/gm, '"') +
+              '",'
+            );
+          })
+          .join("")}}) {
+            id
+          }
+          }`,
+        this.verbandbuch
+      );
+      console.log(res);
       console.log("SUBMIT");
     }
   }

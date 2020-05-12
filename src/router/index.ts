@@ -1,17 +1,28 @@
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
-// import Home from '../views/Home.vue';
+import VueRouter, { RouteConfig, NavigationGuard } from "vue-router";
 import Create from "../views/Create.vue";
 import Login from "../views/Login.vue";
-
+import List from "../views/List.vue";
+import { getIdToken } from "@/use/useQuery";
 Vue.use(VueRouter);
 
+export const authGuard: NavigationGuard = (to, from, next) => {
+  if (!to.meta.public) {
+    // If the user is authenticated, continue with the route
+    const expiresIn = JSON.parse(atob(getIdToken().split(".")[1])).exp;
+    const now = Math.floor(Date.now() / 1000);
+    if (now < expiresIn) {
+      return next();
+    }
+
+    // Otherwise, log in
+    return next({ name: "login" });
+  } else {
+    next();
+  }
+};
+
 const routes: Array<RouteConfig> = [
-  // {
-  //   path: '/',
-  //   name: 'home',
-  //   component: Home,
-  // },
   {
     path: "/",
     name: "home",
@@ -26,12 +37,23 @@ const routes: Array<RouteConfig> = [
     path: "/create/:token",
     name: "open-create",
     component: Create,
-    props: true
+    props: true,
+    meta: {
+      public: true
+    }
+  },
+  {
+    path: "/list",
+    name: "list",
+    component: List
   },
   {
     path: "/login",
     name: "login",
-    component: Login
+    component: Login,
+    meta: {
+      public: true
+    }
   }
   // {
   //   path: "/about",
@@ -49,5 +71,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+
+router.beforeEach(authGuard);
 
 export default router;

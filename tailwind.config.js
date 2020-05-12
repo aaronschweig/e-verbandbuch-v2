@@ -9,8 +9,8 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: defaults.colors.teal[400],
-        hover: defaults.colors.teal[500],
+        primary: defaults.colors.green[400],
+        hover: defaults.colors.green[500],
       },
     },
   },

@@ -2,7 +2,7 @@
   <div class="bg-gray-100 min-h-screen text-gray-900 px-4">
     <header class="sticky w-full z-10" style="top: 1.5rem;">
       <nav
-        class="flex rounded-lg bg-gray-100 shadow-xl h-16 items-center overflow-hidden border"
+        class="flex rounded-lg bg-gray-100 shadow-xl h-16 items-center overflow-hidden"
       >
         <button class="bg-primary h-full px-6 z-10 focus:outline-none">
           <svg
