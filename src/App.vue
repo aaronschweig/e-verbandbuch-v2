@@ -22,6 +22,12 @@
           class="cursor-pointer px-2 pl-6 h-full flex items-center font-semibold text-xl sm:text-2xl hover:bg-primary active:bg-primary hover:text-white transition-colors duration-200"
           >eVerbandbuch</router-link
         >
+        <span class="flex-1"></span>
+        <router-link
+          to="/list"
+          class="cursor-pointer text-lg font-medium flex items-center px-6 h-full hover:bg-primary active:bg-primary hover:text-white transition-colors duration-200"
+          >Übersicht</router-link
+        >
       </nav>
     </header>
     <main class="navbar-spacer">

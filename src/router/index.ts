@@ -9,12 +9,15 @@ Vue.use(VueRouter);
 export const authGuard: NavigationGuard = (to, from, next) => {
   if (!to.meta.public) {
     // If the user is authenticated, continue with the route
-    const expiresIn = JSON.parse(atob(getIdToken().split(".")[1])).exp;
-    const now = Math.floor(Date.now() / 1000);
-    if (now < expiresIn) {
-      return next();
+    try {
+      const expiresIn = JSON.parse(atob(getIdToken().split(".")[1])).exp;
+      const now = Math.floor(Date.now() / 1000);
+      if (now < expiresIn) {
+        return next();
+      }
+    } catch {
+      //
     }
-
     // Otherwise, log in
     return next({ name: "login" });
   } else {

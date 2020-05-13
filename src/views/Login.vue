@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-xl space-y-4">
+  <form @submit.prevent="login" class="max-w-xl space-y-4">
     Mit AMS-Account (für einen Standort, <b>kein Management!</b>) einloggen
     <ev-input
       label="Email"
@@ -47,10 +47,10 @@
         </svg>
       </template>
     </ev-input>
-    <ev-button @click="login">
+    <ev-button @click="login" type="submit">
       Login!
     </ev-button>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
