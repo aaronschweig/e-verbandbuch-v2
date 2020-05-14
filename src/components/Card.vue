@@ -6,7 +6,7 @@
     <!-- HEADER -->
     <div class="flex items-center justify-between">
       <div>
-        <h4 class="text-gray-900 text-xl font-medium">{{ name }}</h4>
+        <h4 class="text-gray-900 text-xl font-medium">{{ verletzter }}</h4>
         <p class="text-sm font-light text-gray-700">{{ date | format }}</p>
       </div>
       <svg
@@ -58,7 +58,7 @@ import Vue from "vue";
 import { useDateFormatter } from "@/use/useDateFormatter";
 export default Vue.extend({
   props: {
-    name: {
+    verletzter: {
       type: String,
       required: true
     },

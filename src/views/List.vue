@@ -151,7 +151,7 @@ export default Vue.extend({
         }
     }`);
     this.isExpanded = new Array(result.length).fill(false);
-    this.eintraege = result.map(r => ({ ...r, name: r.verletzter }));
+    this.eintraege = result;
   },
   methods: {
     toggleExpansion(idx: number) {
