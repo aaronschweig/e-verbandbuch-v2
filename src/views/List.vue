@@ -6,7 +6,7 @@
       class="md:hidden"
       v-bind="eintrag"
     />
-    <div class="hidden md:block">
+    <div class="hidden md:block md:pb-12">
       <div class="flex items-center justify-between">
         <h2 class="text-2xl font-semibold text-gray-900">
           Übersicht der Einträge
@@ -34,10 +34,36 @@
         <table class="table-fixed w-full">
           <thead>
             <tr class="text-left border-b border-gray-600">
-              <th class="w-1/6 pl-6 pb-3">Unfalldatum</th>
-              <th class="w-1/6 pb-3">Name des Verletzten</th>
-              <th class="w-1/3 pb-3">Hergang</th>
-              <th class="w-1/3 pr-6 pb-3">Art und Umfang</th>
+              <ev-th
+                class="pl-6"
+                sort-key="unfallzeitpunkt"
+                :state="currentSortedBy"
+                @click="send('SORT', 'unfallzeitpunkt')"
+              >
+                Unfalldatum
+              </ev-th>
+              <ev-th
+                sort-key="verletzter"
+                :state="currentSortedBy"
+                @click="send('SORT', 'verletzter')"
+              >
+                Name des Verletzten
+              </ev-th>
+              <ev-th
+                sort-key="hergang"
+                :state="currentSortedBy"
+                @click="send('SORT', 'hergang')"
+              >
+                Hergang
+              </ev-th>
+              <ev-th
+                sort-key="umfang"
+                :state="currentSortedBy"
+                @click="send('SORT', 'umfang')"
+                class="w-1/3 pr-6"
+              >
+                Art und Umfang
+              </ev-th>
             </tr>
           </thead>
           <tbody>
@@ -68,22 +94,50 @@
 import Vue from "vue";
 import { useDateFormatter } from "@/use/useDateFormatter";
 import { useQuery } from "@/use/useQuery";
-
-interface Verbandbuch {
-  id: number;
-  verletzter: string;
-  name: string;
-  unfallzeitpunkt: string;
-  umfang: string;
-  hergang: string;
-}
+import { interpret, Interpreter, assign } from "xstate";
+import {
+  sortMachine,
+  descendingSorter,
+  ascendigSorter
+} from "../machine/sorter";
+import { Verbandbuch } from "@/types";
 
 export default Vue.extend({
   data: () => ({
     isExpanded: [] as boolean[],
-    eintraege: [] as Verbandbuch[]
+    eintraege: [] as Verbandbuch[],
+    currentSortedBy: {
+      key: sortMachine.context!.key,
+      order: sortMachine.initialState
+    },
+    sortService: {} as Interpreter<any>
   }),
   async created() {
+    this.sortService = interpret(
+      sortMachine.withConfig({
+        actions: {
+          ascSort: assign((ctx, event) => {
+            const key = event.key as keyof Verbandbuch;
+            this.eintraege = this.eintraege.sort(ascendigSorter(key));
+            return { key };
+          }),
+          descSort: assign((ctx, event) => {
+            const key = event.key as keyof Verbandbuch;
+            this.eintraege = this.eintraege.sort(descendingSorter(key));
+            return { key };
+          }),
+          cleanSort: assign((ctx, event) => {
+            this.eintraege = this.eintraege.sort((e1, e2) => e1.id - e2.id);
+            return { key: "" };
+          })
+        }
+      })
+    )
+      .onTransition(state => {
+        this.currentSortedBy.key = state.context.key;
+        this.currentSortedBy.order = state;
+      })
+      .start();
     const { findVerbandbuch: result } = await useQuery<{
       findVerbandbuch: Verbandbuch[];
     }>(`
@@ -104,6 +158,9 @@ export default Vue.extend({
       // Mähh
       this.isExpanded[idx] = !this.isExpanded[idx];
       this.isExpanded = [...this.isExpanded];
+    },
+    send(event: "SORT", key: keyof Verbandbuch) {
+      this.sortService.send("SORT", { key });
     }
   },
   filters: {
