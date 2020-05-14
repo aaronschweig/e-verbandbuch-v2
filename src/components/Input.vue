@@ -20,7 +20,12 @@
         @input="$emit('input', $event.target.value)"
         :value="value"
         v-bind="$attrs"
+        @focus="$emit('focus')"
+        @blur="$emit('blur')"
       />
+      <div v-if="$slots.after" class="px-2 border-l cursor-pointer">
+        <slot name="after" />
+      </div>
     </div>
   </div>
 </template>

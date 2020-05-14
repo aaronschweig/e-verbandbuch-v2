@@ -10,6 +10,8 @@
           label="Name des Verletzten"
           placeholder="Thomas Müller"
           v-model="verbandbuch.verletzter"
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
         >
           <template #icon>
             <svg
@@ -31,6 +33,8 @@
           label="Unfallort"
           placeholder="Mannheim"
           v-model="verbandbuch.unfallort"
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
         >
           <template #icon>
             <svg
@@ -52,6 +56,8 @@
           label="Arbeitsbereich"
           placeholder="Garage A"
           v-model="verbandbuch.arbeitsbereich"
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
         >
           <template #icon>
             <svg
@@ -77,6 +83,8 @@
         label="Name der Zeugen"
         placeholder="Monika Musterfrau"
         v-model="verbandbuch.zeugen"
+        @focus="inputFocused = true"
+        @blur="inputFocused = false"
       >
         <template #icon>
           <svg
@@ -103,6 +111,8 @@
       <ev-textarea
         placeholder="Hammerschlag auf die Hand ..."
         v-model="verbandbuch.hergang"
+        @focus="inputFocused = true"
+        @blur="inputFocused = false"
       />
       <h3 class="text-lg font-medium mt-8">
         Was ist der Umfang der Verletzung?
@@ -110,6 +120,8 @@
       <ev-textarea
         placeholder="Gebrochener Zeigefinger und blutende Hand ..."
         v-model="verbandbuch.umfang"
+        @focus="inputFocused = true"
+        @blur="inputFocused = false"
       />
     </div>
     <div class="min-h-screen sm:w-2/3">
@@ -122,6 +134,8 @@
           label="Name des Ersthelfers"
           placeholder="Thomas Müller"
           v-model="verbandbuch.ersthelfer"
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
         >
           <template #icon>
             <svg
@@ -143,6 +157,8 @@
           label="Datum und Uhrzeit der Hilfe"
           placeholder="13:15 Uhr"
           v-model="verbandbuch.erstehilfezeitpunkt"
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
         >
           <template #icon>
             <svg
@@ -167,13 +183,17 @@
       <ev-textarea
         placeholder="Verband angelegt und Hand stabilisiert ..."
         v-model="verbandbuch.massnahmen"
+        @focus="inputFocused = true"
+        @blur="inputFocused = false"
       />
     </div>
 
     <div class="fixed w-full z-10" style="bottom: 1.5rem;">
       <div class="flex justify-center items-center space-x-16">
-        <ev-button @click="send('PREV')">zurück</ev-button>
-        <ev-button @click="send('NEXT')">{{
+        <ev-button v-show="!inputFocused" @click="send('PREV')"
+          >zurück</ev-button
+        >
+        <ev-button v-show="!inputFocused" @click="send('NEXT')">{{
           current.matches("last") ? "Absenden" : "Weiter"
         }}</ev-button>
       </div>
@@ -210,7 +230,8 @@ export default Vue.extend({
       erstehilfezeitpunkt: new Date().toISOString(),
       massnahmen: "",
       ersthelfer: ""
-    }
+    },
+    inputFocused: false
   }),
   created() {
     this.stepperService = createStepperMachine(this.submit);
